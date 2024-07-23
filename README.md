@@ -3,6 +3,7 @@ A PowerToys plugin to directly search on youtube.
 
 ## Screenshots
 ![image](ReadMePics/screenshot1.png)
+![image](ReadMePics/screenshot2.png)
 
 ## Installation
 1. Download the latest release from the [releases page](https://github.com/vijayv996/tubeToys/releases).
