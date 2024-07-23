@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using Wox.Infrastructure;
 using Wox.Plugin;
 using Wox.Plugin.Logger;
+using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 namespace Community.PowerToys.Run.Plugin.tubeToys
 {
@@ -31,7 +32,7 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
         public string Description => Properties.Resources.plugin_description;
 
         // TODO: remove dash from ID below and inside plugin.json
-        public static string PluginID => "69fd1e68-91b0-40be-9215-6c25b4e86aa2";
+        public static string PluginID => "69fd1e6891b040be92156c25b4e86aa2";
 
         // TODO: add additional options (optional)
         public IEnumerable<PluginAdditionalOption> AdditionalOptions => new List<PluginAdditionalOption>()
@@ -67,7 +68,7 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
             {
                 results.Add(new Result
                 {
-                    Title = Name,
+                    Title = Search,
                     SubTitle = Description,
                     QueryTextDisplay = string.Empty,
                     IcoPath = _iconPath,
@@ -77,6 +78,32 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
                     },
                 });
                 return results;
+            }
+            else
+            {
+                string searchTerm = query.Search;
+
+                var result = new Result
+                {
+                    Title = searchTerm,
+                    SubTitle = string.Format(CultureInfo.CurrentCulture, BrowserInfo.Name ?? BrowserInfo.MSEdgeName),
+                    QueryTextDisplay = searchTerm,
+                    IcoPath = _iconPath,
+                };
+
+                string arguments = $"https://www.youtube.com/results?search_query={searchTerm}";
+
+                result.ProgramArguments = arguments;
+                result.Action = action =>
+                {
+                    if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, arguments))
+                    {
+                        return false;
+                    }
+                    return true;
+                };
+
+                results.Add(result);
             }
 
             return results;
