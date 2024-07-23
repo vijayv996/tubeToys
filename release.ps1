@@ -4,13 +4,13 @@ Set-Location $PSScriptRoot
 $name = 'tubeToys'
 $assembly = "Community.PowerToys.Run.Plugin.$name"
 $version = "v$((Get-Content ./plugin.json | ConvertFrom-Json).Version)"
-$archs = @('x64', 'arm64')
-$tempDir = './out/temp'
+$archs = @('x64')
+$tempDir = './tubeToys'
 
 git tag $version
 git push --tags
 
-Remove-Item ./out/*.zip -Recurse -Force -ErrorAction Ignore
+Remove-Item ./tubeToys/*.zip -Recurse -Force -ErrorAction Ignore
 foreach ($arch in $archs) {
 	$releasePath = "./bin/$arch/Release/net8.0-windows"
 
@@ -25,8 +25,8 @@ foreach ($arch in $archs) {
 		"$releasePath/Images"
 	)
 	Copy-Item $items "$tempDir" -Recurse -Force
-	Compress-Archive "$tempDir" "./out/$name-$version-$arch.zip" -Force
+	Compress-Archive "$tempDir" "./tubeToys/$name-$version-$arch.zip" -Force
 }
 
-gh release create $version (Get-ChildItem ./out/*.zip)
+gh release create $version (Get-ChildItem ./tubeToys/*.zip)
 Pop-Location
