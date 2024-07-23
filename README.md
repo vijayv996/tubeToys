@@ -2,7 +2,9 @@
 A PowerToys plugin to directly search on youtube.
 
 ## Screenshots
+#### Search
 ![image](ReadMePics/screenshot1.png)
+#### Result
 ![image](ReadMePics/screenshot2.png)
 
 ## Installation
