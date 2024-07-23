@@ -1,0 +1,14 @@
+{
+  "ID": "69fd1e68-91b0-40be-9215-6c25b4e86aa2",
+  "ActionKeyword": "plug",
+  "Disabled": false,
+  "IsGlobal": false,
+  "Name": "tubeToys",
+  "Author": "",
+  "Version": "1.0.0",
+  "Language": "csharp",
+  "Website": "",
+  "ExecuteFileName": "Community.PowerToys.Run.Plugin.tubeToys.dll",
+  "IcoPathDark": "Images\\tubeToys.dark.png",
+  "IcoPathLight": "Images\\tubeToys.light.png"
+}
