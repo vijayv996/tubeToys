@@ -68,7 +68,7 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
             {
                 results.Add(new Result
                 {
-                    Title = Search,
+                    Title = "Search",
                     SubTitle = Description,
                     QueryTextDisplay = string.Empty,
                     IcoPath = _iconPath,
