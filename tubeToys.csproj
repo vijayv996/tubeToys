@@ -66,4 +66,8 @@
         </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="YTSearch.NET" Version="1.0.3" />
+    </ItemGroup>
+
 </Project>

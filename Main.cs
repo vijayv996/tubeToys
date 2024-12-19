@@ -11,6 +11,8 @@ using Wox.Infrastructure;
 using Wox.Plugin;
 using Wox.Plugin.Logger;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
+using YTSearch;
+using YTSearch.NET;
 
 namespace Community.PowerToys.Run.Plugin.tubeToys
 {
@@ -109,6 +111,36 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
             return results;
         }
 
+        public async Task<List<Result>> scrape(string searchTerm, bool delayedExecution)
+        {
+
+            var results = new List<Result>();
+
+            var client = new YouTubeSearchClient();
+            var ytresults = (await client.SearchYoutubeVideoAsync(searchTerm)).Results;
+
+            foreach(var item in ytresults.Take(4))
+            {
+                results.Add(new Result
+                {
+                    Title = item.Title,
+                    SubTitle = item.Author + " | " + item.Length,
+                    IcoPath = _iconPath,
+                    Action = Action =>
+                    {
+                        if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, item.Url))
+                        {
+                            return false;
+                        }
+                        return true;
+                    }
+                });
+
+            }
+
+            return results;
+        }
+
         // TODO: return delayed query results (optional)
         public List<Result> Query(Query query, bool delayedExecution)
         {
@@ -121,6 +153,10 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
             {
                 return results;
             }
+            string searchTerm = query.Search;
+            var task = scrape(searchTerm, delayedExecution);
+            task.Wait();
+            results.AddRange(task.Result);
 
             return results;
         }
