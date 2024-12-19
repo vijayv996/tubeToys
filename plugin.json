@@ -3,6 +3,7 @@
     "ActionKeyword": "yt",
     "Disabled": false,
     "IsGlobal": false,
+    "DynamicLoading": true,
     "Name": "tubeToys",
     "Author": "vijay996",
     "Version": "1.0.0",
