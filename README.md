@@ -12,12 +12,19 @@ A PowerToys plugin to directly search on youtube.
 ## Usage & screenshots
 - Open PowerToys Run.
 - Type `yt` and enter the search term.
+
 ![image](screenshots/ss0.png)
+
 - Hit enter immediately to search the term in your default browser.
+
 ![image](screenshots/ss1.png)
+
 - Else wait for the results to load.
+
 ![image](screenshots/ss2.png)
+
 - Select the result and hit enter to open the video in your default browser
+
 ![image](screenshots/ss3.png)
 
 ## Credits
