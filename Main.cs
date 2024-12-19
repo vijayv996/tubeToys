@@ -124,7 +124,7 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
                 results.Add(new Result
                 {
                     Title = item.Title,
-                    SubTitle = item.Author + " | " + item.Length,
+                    SubTitle = $"{item.Author} | {item.Length:mm\\:ss}",
                     IcoPath = _iconPath,
                     Action = Action =>
                     {
