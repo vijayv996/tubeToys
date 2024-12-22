@@ -5,7 +5,7 @@ A PowerToys plugin to directly search on youtube.
 1. Download the latest release from the [releases page](https://github.com/vijayv996/tubeToys/releases).
 2. Extract the `.zip` file's contents to `%LocalAppData%\Microsoft\PowerToys\PowerToys Run\Plugins`
 ##### Structure
-![image](screenshots/structure.png)
+![image](screenshots/structure1.png)
 
 3. Restart PowerToys.
 
