@@ -76,6 +76,10 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
                     IcoPath = _iconPath,
                     Action = action =>
                     {
+                        if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, "https://www.youtube.com/"))
+                        {
+                            return false;
+                        }
                         return true;
                     },
                 });
