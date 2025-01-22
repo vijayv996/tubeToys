@@ -1,6 +1,8 @@
 using ManagedCommon;
 using Microsoft.PowerToys.Settings.UI.Library;
 using System;
+using System.IO;
+using System.Net.Http;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -35,6 +37,8 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
 
         private bool showLength { get; set; }
 
+        private bool showThumbnails { get; set; }
+
         public string Name => Properties.Resources.plugin_name;
 
         public string Description => Properties.Resources.plugin_description;
@@ -65,6 +69,14 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
                 DisplayLabel = "Hide Video Length",
                 PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Checkbox,
                 Value = showLength,
+            },
+            new()
+            {
+                Key = nameof(showThumbnails),
+                DisplayLabel = "Show Thumbnails",
+                DisplayDescription = "Results might load slower",
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Checkbox,
+                Value = showThumbnails,
             }
         };
 
@@ -73,6 +85,7 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
             showViews = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showViews))?.Value ?? false;
             showAuthor = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showAuthor))?.Value ?? false;
             showLength = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showLength))?.Value ?? false;
+            showThumbnails = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showThumbnails))?.Value ?? false;
         }
 
         // TODO: return context menus for each Result (optional)
@@ -86,6 +99,25 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
         {
             ArgumentNullException.ThrowIfNull(query);
 
+            if(showThumbnails) {
+                var directory = Directory.GetCurrentDirectory();
+                var pngFiles = Directory.GetFiles(directory, "*.png");
+
+                foreach (var file in pngFiles)
+                {
+                    try
+                    {
+                        File.Delete(file);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log the exception or handle it as needed
+                        Console.WriteLine($"Failed to delete {file}: {ex.Message}");
+                    }
+                }
+            }
+
+            Log.Info("Query: " + query.Search, GetType());
             var results = new List<Result>();
 
             // empty query
@@ -179,11 +211,18 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
 
                 }
 
+                string iconpath;
+                if(showThumbnails) {
+                    iconpath = await DownloadImageAsync(item.Thumbnails[0].Url, item.VideoId + ".png");
+                } else {
+                    iconpath = _iconPath;
+                }
+                
                 results.Add(new Result
                 {
                     Title = item.Title,
                     SubTitle = subTitle,
-                    IcoPath = _iconPath,
+                    IcoPath = iconpath,
                     Action = Action =>
                     {
                         if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, item.Url))
@@ -197,6 +236,30 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
             }
 
             return results;
+        }
+
+        public static async Task<string> DownloadImageAsync(string url, string filename)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                {
+                    var imageStream = await response.Content.ReadAsStreamAsync();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), filename);
+                    using (var fileStream = new FileStream(filename, FileMode.Create))
+                    {
+                        await imageStream.CopyToAsync(fileStream);
+                    }
+                    //Log.Info($"Image saved as {filename}", GetType());
+                    return filePath;
+                }
+                else
+                {
+                    //Log.Info("Failed to download image", GetType());
+                    return null;
+                }
+            }
         }
 
         // TODO: return delayed query results (optional)
