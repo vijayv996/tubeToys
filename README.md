@@ -22,7 +22,7 @@ A PowerToys plugin to directly search on youtube.
 
 - Else wait for the results to load.
 
-![image](screenshots/ss2.png)
+![image](screenshots/ss4.png)
 
 - Select the result and hit enter to open the video in your default browser
 
