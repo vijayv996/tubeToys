@@ -82,6 +82,7 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
 
         public void UpdateSettings(PowerLauncherPluginSettings settings)
         {
+            Log.Info("UpdateSettings", GetType());
             showViews = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showViews))?.Value ?? false;
             showAuthor = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showAuthor))?.Value ?? false;
             showLength = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showLength))?.Value ?? false;
@@ -97,6 +98,9 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
         // TODO: return query results
         public List<Result> Query(Query query)
         {
+
+            Log.Info("Query: " + query.Search, GetType());
+
             ArgumentNullException.ThrowIfNull(query);
 
             if(showThumbnails) {
@@ -251,12 +255,10 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
                     {
                         await imageStream.CopyToAsync(fileStream);
                     }
-                    //Log.Info($"Image saved as {filename}", GetType());
                     return filePath;
                 }
                 else
                 {
-                    //Log.Info("Failed to download image", GetType());
                     return null;
                 }
             }
@@ -284,6 +286,7 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
 
         public void Init(PluginInitContext context)
         {
+            Log.Info("Init", GetType());
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _context.API.ThemeChanged += OnThemeChanged;
             UpdateIconPath(_context.API.GetCurrentTheme());
@@ -333,6 +336,7 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
 
         public void Dispose()
         {
+            Log.Info("Dispose", GetType());
             Dispose(true);
             GC.SuppressFinalize(this);
         }
