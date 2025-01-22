@@ -29,6 +29,8 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
 
         private bool _disposed;
 
+        private bool getViews {  get; set; }
+
         public string Name => Properties.Resources.plugin_name;
 
         public string Description => Properties.Resources.plugin_description;
@@ -39,17 +41,20 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
         // TODO: add additional options (optional)
         public IEnumerable<PluginAdditionalOption> AdditionalOptions => new List<PluginAdditionalOption>()
         {
-            new PluginAdditionalOption()
+            new()
             {
-                Key = Setting,
-                DisplayLabel = Properties.Resources.plugin_setting,
-                Value = false,
-            },
+                Key = nameof(getViews),
+                DisplayLabel = "Show Views",
+                DisplayDescription = "Show number of views of videos",
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Checkbox,
+                Value = getViews,
+            }
         };
 
         public void UpdateSettings(PowerLauncherPluginSettings settings)
         {
             _setting = settings?.AdditionalOptions?.FirstOrDefault(x => x.Key == Setting)?.Value ?? false;
+            getViews = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(getViews))?.Value ?? true;
         }
 
         // TODO: return context menus for each Result (optional)
@@ -125,10 +130,21 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
 
             foreach(var item in ytresults.Take(4))
             {
+
+                string subTitle = "";
+                if (getViews) 
+                {
+                    //var result = (await client.GetVideoMetadataAsync(new Uri(item.Url))).Result;
+                    subTitle = $"{item.Author} | {item.Length:mm\\:ss} | {item.Views} views";
+                } else 
+                {
+                    subTitle = $"{item.Author} | {item.Length:mm\\:ss}";
+                }
+
                 results.Add(new Result
                 {
                     Title = item.Title,
-                    SubTitle = $"{item.Author} | {item.Length:mm\\:ss}",
+                    SubTitle = subTitle,
                     IcoPath = _iconPath,
                     Action = Action =>
                     {
