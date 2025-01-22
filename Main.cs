@@ -29,7 +29,11 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
 
         private bool _disposed;
 
-        private bool getViews {  get; set; }
+        private bool showViews {  get; set; }
+
+        private bool showAuthor {  get; set; }
+
+        private bool showLength { get; set; }
 
         public string Name => Properties.Resources.plugin_name;
 
@@ -43,18 +47,36 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
         {
             new()
             {
-                Key = nameof(getViews),
-                DisplayLabel = "Show Views",
-                DisplayDescription = "Show number of views of videos",
+                Key = nameof(showViews),
+                DisplayLabel = "Hide Views",
+                DisplayDescription = "Hide the number of views",
                 PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Checkbox,
-                Value = getViews,
+                Value = showViews,
+            },
+            new()
+            {
+                Key = nameof(showAuthor),
+                DisplayLabel = "Hide Author",
+                DisplayDescription = "Hide the channel of the video",
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Checkbox,
+                Value = showAuthor,
+            },
+            new()
+            {
+                Key = nameof(showLength),
+                DisplayLabel = "Hide Length",
+                DisplayDescription = "Hide video length",
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Checkbox,
+                Value = showLength,
             }
         };
 
         public void UpdateSettings(PowerLauncherPluginSettings settings)
         {
             _setting = settings?.AdditionalOptions?.FirstOrDefault(x => x.Key == Setting)?.Value ?? false;
-            getViews = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(getViews))?.Value ?? true;
+            showViews = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showViews))?.Value ?? false;
+            showAuthor = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showAuthor))?.Value ?? false;
+            showLength = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showLength))?.Value ?? false;
         }
 
         // TODO: return context menus for each Result (optional)
@@ -132,13 +154,17 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
             {
 
                 string subTitle = "";
-                if (getViews) 
+                if (!showAuthor)
                 {
-                    //var result = (await client.GetVideoMetadataAsync(new Uri(item.Url))).Result;
-                    subTitle = $"{item.Author} | {item.Length:mm\\:ss} | {item.Views} views";
-                } else 
+                    subTitle = subTitle + $"{item.Author}";
+                }
+                if (!showLength)
                 {
-                    subTitle = $"{item.Author} | {item.Length:mm\\:ss}";
+                    subTitle = subTitle + $" | {item.Length:mm\\:ss}";
+                }
+                if (!showViews)
+                {
+                    subTitle = subTitle + $" | {item.Views} views";
                 }
 
                 results.Add(new Result
