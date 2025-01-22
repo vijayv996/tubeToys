@@ -13,6 +13,7 @@ using Wox.Plugin.Logger;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 using YTSearch;
 using YTSearch.NET;
+using System.Globalization;
 
 namespace Community.PowerToys.Run.Plugin.tubeToys
 {
@@ -73,7 +74,6 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
 
         public void UpdateSettings(PowerLauncherPluginSettings settings)
         {
-            _setting = settings?.AdditionalOptions?.FirstOrDefault(x => x.Key == Setting)?.Value ?? false;
             showViews = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showViews))?.Value ?? false;
             showAuthor = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showAuthor))?.Value ?? false;
             showLength = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showLength))?.Value ?? false;
@@ -142,7 +142,7 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
             return results;
         }
 
-        public async Task<List<Result>> scrape(string searchTerm, bool delayedExecution)
+        public async Task<List<Result>> Scrape(string searchTerm, bool delayedExecution)
         {
 
             var results = new List<Result>();
@@ -164,7 +164,25 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
                 }
                 if (!showViews)
                 {
-                    subTitle = subTitle + $" | {item.Views} views";
+                    int views = (int)item.Views;
+                    string formattedViews;
+                    if (views > 1000 && views < 1000000)
+                    {
+                        formattedViews = views.ToString("#,##0,K", CultureInfo.InvariantCulture);
+                    }
+                    else if (views > 999999 && views < 1000000000)
+                    {
+                        formattedViews = views.ToString("#,##0,,M", CultureInfo.InvariantCulture);
+                    }
+                    else if (views > 999999999)
+                    {
+                        formattedViews = views.ToString("#,##0,,,B", CultureInfo.InvariantCulture);
+                    }
+                    else
+                    {
+                        formattedViews = views.ToString("#,#", CultureInfo.InvariantCulture);
+                    }
+                    subTitle = subTitle + " | " + formattedViews;
                 }
 
                 results.Add(new Result
@@ -200,7 +218,7 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
                 return results;
             }
             string searchTerm = query.Search;
-            var task = scrape(searchTerm, delayedExecution);
+            var task = Scrape(searchTerm, delayedExecution);
             task.Wait();
             results.AddRange(task.Result);
 
