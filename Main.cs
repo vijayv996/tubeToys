@@ -13,7 +13,6 @@ using Wox.Plugin.Logger;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 using YTSearch;
 using YTSearch.NET;
-using System.Globalization;
 
 namespace Community.PowerToys.Run.Plugin.tubeToys
 {
@@ -50,23 +49,20 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
             {
                 Key = nameof(showViews),
                 DisplayLabel = "Hide Views",
-                DisplayDescription = "Hide the number of views",
                 PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Checkbox,
                 Value = showViews,
             },
             new()
             {
                 Key = nameof(showAuthor),
-                DisplayLabel = "Hide Author",
-                DisplayDescription = "Hide the channel of the video",
+                DisplayLabel = "Hide Author(Channel)",
                 PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Checkbox,
                 Value = showAuthor,
             },
             new()
             {
                 Key = nameof(showLength),
-                DisplayLabel = "Hide Length",
-                DisplayDescription = "Hide video length",
+                DisplayLabel = "Hide Video Length",
                 PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Checkbox,
                 Value = showLength,
             }
@@ -150,39 +146,37 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
             var client = new YouTubeSearchClient();
             var ytresults = (await client.SearchYoutubeVideoAsync(searchTerm)).Results;
 
-            foreach(var item in ytresults.Take(4))
-            {
+            foreach(var item in ytresults.Take(4)) {
 
                 string subTitle = "";
-                if (!showAuthor)
-                {
+                if (!showAuthor) {
                     subTitle = subTitle + $"{item.Author}";
                 }
-                if (!showLength)
-                {
-                    subTitle = subTitle + $" | {item.Length:mm\\:ss}";
+                if (!showLength) {
+                    if (subTitle.Length > 0) {
+                        subTitle = subTitle + $" | {item.Length:mm\\:ss}";
+                    } else {
+                        subTitle = $"{item.Length:mm\\:ss}";
+                    }
                 }
-                if (!showViews)
-                {
+                if (!showViews) {
                     int views = (int)item.Views;
                     string formattedViews;
-                    if (views > 1000 && views < 1000000)
-                    {
+                    if (views > 1000 && views < 1000000) {
                         formattedViews = views.ToString("#,##0,K", CultureInfo.InvariantCulture);
-                    }
-                    else if (views > 999999 && views < 1000000000)
-                    {
+                    } else if (views > 999999 && views < 1000000000) {
                         formattedViews = views.ToString("#,##0,,M", CultureInfo.InvariantCulture);
-                    }
-                    else if (views > 999999999)
-                    {
+                    } else if (views > 999999999) {
                         formattedViews = views.ToString("#,##0,,,B", CultureInfo.InvariantCulture);
-                    }
-                    else
-                    {
+                    } else {
                         formattedViews = views.ToString("#,#", CultureInfo.InvariantCulture);
                     }
-                    subTitle = subTitle + " | " + formattedViews;
+                    if (subTitle.Length > 0) {
+                        subTitle = subTitle + " | " + formattedViews;
+                    } else {
+                        subTitle = formattedViews;
+                    }
+
                 }
 
                 results.Add(new Result
