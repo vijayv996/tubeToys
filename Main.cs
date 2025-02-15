@@ -31,13 +31,15 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
 
         private bool _disposed;
 
-        private bool showViews {  get; set; }
+        private bool hideViews {  get; set; }
 
-        private bool showAuthor {  get; set; }
+        private bool hideAuthor {  get; set; }
 
-        private bool showLength { get; set; }
+        private bool hideLength { get; set; }
 
         private bool showThumbnails { get; set; }
+
+        private bool noResults { get; set; }
 
         public string Name => Properties.Resources.plugin_name;
 
@@ -51,24 +53,31 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
         {
             new()
             {
-                Key = nameof(showViews),
+                Key = nameof(noResults),
+                DisplayLabel = "Don't load Results",
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Checkbox,
+                Value = noResults,
+            },
+            new()
+            {
+                Key = nameof(hideViews),
                 DisplayLabel = "Hide Views",
                 PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Checkbox,
-                Value = showViews,
+                Value = hideViews,
             },
             new()
             {
-                Key = nameof(showAuthor),
+                Key = nameof(hideAuthor),
                 DisplayLabel = "Hide Author(Channel)",
                 PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Checkbox,
-                Value = showAuthor,
+                Value = hideAuthor,
             },
             new()
             {
-                Key = nameof(showLength),
+                Key = nameof(hideLength),
                 DisplayLabel = "Hide Video Length",
                 PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Checkbox,
-                Value = showLength,
+                Value = hideLength,
             },
             new()
             {
@@ -83,9 +92,10 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
         public void UpdateSettings(PowerLauncherPluginSettings settings)
         {
             Log.Info("UpdateSettings", GetType());
-            showViews = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showViews))?.Value ?? false;
-            showAuthor = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showAuthor))?.Value ?? false;
-            showLength = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showLength))?.Value ?? false;
+            noResults = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(noResults))?.Value ?? false;
+            hideViews = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(hideViews))?.Value ?? false;
+            hideAuthor = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(hideAuthor))?.Value ?? false;
+            hideLength = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(hideLength))?.Value ?? false;
             showThumbnails = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(showThumbnails))?.Value ?? false;
         }
 
@@ -121,7 +131,6 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
                 }
             }
 
-            Log.Info("Query: " + query.Search, GetType());
             var results = new List<Result>();
 
             // empty query
@@ -185,17 +194,17 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
             foreach(var item in ytresults.Take(4)) {
 
                 string subTitle = "";
-                if (!showAuthor) {
+                if (!hideAuthor) {
                     subTitle = subTitle + $"{item.Author}";
                 }
-                if (!showLength) {
+                if (!hideLength) {
                     if (subTitle.Length > 0) {
                         subTitle = subTitle + $" | {item.Length:mm\\:ss}";
                     } else {
                         subTitle = $"{item.Length:mm\\:ss}";
                     }
                 }
-                if (!showViews) {
+                if (!hideViews) {
                     int views = (int)item.Views;
                     string formattedViews;
                     if (views > 1000 && views < 1000000) {
@@ -270,6 +279,11 @@ namespace Community.PowerToys.Run.Plugin.tubeToys
             ArgumentNullException.ThrowIfNull(query);
 
             var results = new List<Result>();
+
+            if(noResults)
+            {
+                return results;
+            }
 
             // empty query
             if (string.IsNullOrEmpty(query.Search))
