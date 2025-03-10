@@ -6,7 +6,7 @@
     "DynamicLoading": true,
     "Name": "tubeToys",
     "Author": "vijay996",
-    "Version": "2.0.0",
+    "Version": "2.2.0",
     "Language": "csharp",
     "Website": "https://github.com/vijayv996/tubeToys",
     "ExecuteFileName": "Community.PowerToys.Run.Plugin.tubeToys.dll",
